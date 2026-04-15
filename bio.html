@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijital Arşiv | Profilim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prata&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5F3ED; /* Base background */
+            --navy: #1A3A5F;  /* Deep classic accent */
+            --gold: #C49A6C;  /* Subtle luxury gold */
+            --text-main: #1E1E1E; /* Dark near-black */
+            --glow: rgba(196, 154, 108, 0.2); /* Soft gold glow */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* No scroll, all on screen */
+        }
+
+        /* The main 'digital screen' container */
+        .dashboard-screen {
+            width: 90vw;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--gold);
+            border-radius: 4px; /* Classic, almost sharp corners */
+            box-shadow: 0 0 30px var(--glow), 0 0 5px rgba(0,0,0,0.1) inset;
+            position: relative;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 250px 1fr; /* Sidebar & Main */
+            gap: 30px;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Screen scanlines effect for 'digital' feel */
+        .dashboard-screen::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0) 50%, rgba(200,200,200,0.02) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            border-right: 1px solid rgba(196, 154, 108, 0.3);
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .profile-id {
+            margin-bottom: 40px;
+        }
+
+        .profile-id-number {
+            font-size: 0.75rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .name-serif {
+            font-family: 'Prata', serif;
+            font-size: 2rem;
+            color: var(--navy);
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .nav-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-items li {
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #555;
+            font-size: 0.95rem;
+            border-bottom: 1px solid transparent;
+        }
+
+        .nav-items li.active, .nav-items li:hover {
+            color: var(--gold);
+            border-bottom: 1px solid var(--gold);
+        }
+
+        /* MAIN CONTENT SECTION */
+        .main-content {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        header.screen-header {
+            border-bottom: 1px solid rgba(196, 154, 108, 0.3);
+            padding-bottom: 10px;
+            color: var(--navy);
+        }
+
+        .current-status-bar {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background-color: var(--navy);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* GRID for data cells */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 20px;
+            overflow-y: auto; /* Allow scroll within data cells on small screens */
+            padding-right: 5px;
+        }
+
+        /* Customizing scrollbar for main-content */
+        .data-grid::-webkit-scrollbar { width: 5px; }
+        .data-grid::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(196, 154, 108, 0.2);
+            padding: 20px;
+            border-radius: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .cell:hover {
+            border: 1px solid var(--gold);
+            box-shadow: 0 0 15px var(--glow);
+        }
+
+        .cell-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+        }
+
+        .big-number {
+            font-family: 'Prata', serif;
+            font-size: 3.5rem;
+            color: var(--navy);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .label { font-size: 0.8rem; color: #777; }
+
+        .bio-text {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #333;
+            max-width: 90%;
+        }
+
+        .skill-list {
+            margin: 0; padding-left: 20px;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        .footer-links {
+            text-align: right;
+            border-top: 1px solid rgba(196, 154, 108, 0.3);
+            padding-top: 10px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 0.8rem;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--navy); }
+
+        /* JavaScript interaction elements */
+        .typing-effect::after {
+            content: "|";
+            animation: blink 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard-screen {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                height: auto;
+                width: 95vw;
+                padding: 15px;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(196, 154, 108, 0.3);
+                padding-right: 0;
+                padding-bottom: 15px;
+                flex-direction: row;
+                align-items: center;
+            }
+            .profile-id { margin-bottom: 0; }
+            .nav-items { display: flex; gap: 15px; display: none; /* Hide nav on mobile for simplicity */ }
+            .data-grid { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-screen">
+        
+        <aside class="sidebar">
+            <div>
+                <div class="profile-id">
+                    <div class="profile-id-number">AKTS-#B82</div>
+                    <h1 class="name-serif">Bagtyyar Nepesow</h1>
+                </div>
+
+                <ul class="nav-items">
+                    <li class="active">Bio</li>
+                    <li>Yerlesyan yeri:Balkanabat</li>
+                    <li>NOMER:+993******52</li>
+                </ul>
+            </div>
+        </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="screen-header">
+                <div class="current-status-bar">
+                    <div class="status-dot"></div>
+                    SİSTEM: ONLINE | sonky maglumat
+                </div>
+            </header>
+
+            <div class="data-grid">
+                
+                <div class="cell">
+                    <div class="cell-title">MEN BARADA</div>
+                    <div style="display: flex; align-items: baseline; gap: 5px;">
+                        <h2 class="big-number">16</h2>
+                        <span class="label">Yaş</span>
+                    </div>
+                    <p class="label">Klasik estetik | Tehanalogiya</p>
+                </div>
+
+                <div class="cell" style="grid-row: span 2;">
+                    <div class="cell-title">Maglumat [BİYOGRAfA]</div>
+                    <p class="bio-text">
+                     Yokary derejeli web programistliga ,geljekde dine bir web-saytlari dalde eysem app,ios yali enjamlara programma upjunciligi etmeklik arzuwym bar .
+                     Arzuwlar ve bilimini osdurmek bilen geljegini gur. 
+                    </p>
+                    <p class="bio-text">
+                       Vidiolary,suratlari(foto) montazlamak ,dizaynlandyrmak .Durli gornusli websaytlarin frontedlerini doretmek .Prezentasiyalari tayyarlamak ,birnace slaytly,efektly slaytlary tayinlamak .
+                    </p>
+                </div>
+
+                <div class="cell">
+                    <div class="cell-title">Meşgullanyan zatlarym</div>
+                    <p class="bio-text typing-effect" id="typed-text"></p>
+                    <ul class="skill-list">
+                        <li>Modern UI (HTML CSS Python JavaScript)</li>
+                        <li>Dizayner</li>
+                        <li>Office Programmalari</li>
+                    </ul>
+                </div>
+            </div>
+
+            <footer class="footer-links">
+                <a href="https://github.com/bagtyyar2002" target="_blank">GITHUB ARCHIVE</a>
+                <a href="mailto:bagtyyarnv@gmail.com">GMAIL</a>
+            </footer>
+        </main>
+
+    </div>
+
+    <script>
+        // JavaScript Typing Effect for "Meşguliyet Alanları" cell
+        const textElement = document.getElementById('typed-text');
+        const phrases = ["Dizayner", "Programist", "Teknologiya gyzyklanyjy"];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                // Pause at end of phrase
+                isDeleting = true;
+                setTimeout(type, 2000); 
+            } else if (isDeleting && charIndex === 0) {
+                // Move to next phrase
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                setTimeout(type, 500);
+            } else {
+                // Adjust typing/deleting speed
+                setTimeout(type, isDeleting ? 50 : 100);
+            }
+        }
+
+        // Start typing effect on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(type, 1000); // Small delay
+        });
+    </script>
+</body>
+</html>
